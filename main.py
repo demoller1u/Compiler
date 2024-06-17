@@ -1,6 +1,6 @@
 import sys
-import Parser
-import Compile
+import Parser as myparser
+import Compile as compiler
 
 def get_source(filename : str) -> str:
     """
@@ -13,14 +13,14 @@ def get_ast(file_content : str) :
     """
     get the ast from the source code
     """
-    tree = Parser.parser.parse(file_content)
+    tree = myparser.parse(file_content)
     return tree
 
 def compile(ast) :
     """
     compile to assembly code
     """
-    asmLines = Compile.compile(ast)
+    asmLines = compiler.compile_ast(ast)
     return asmLines
 
 def save(asm, filename : str):
