@@ -56,10 +56,11 @@ Cette partie du projet permet de traiter les chaînes de caractères grâce au c
 
 ```python
 main(s1,s2,X){
-    s1 = "abcd";
-    s2 = "efgh" ;
-    s1 = s2 ;
-    return(s1);
+    print(s1);
+    print(s2);
+    X = len(s1); 
+    print(X);
+    return 0;
 }
 ```
 
@@ -74,7 +75,10 @@ Les prinipales opérations rajoutées sont :
 ### Fonctionnalités opérationnelles
 
 Nous avons commencé par mettre en place le parser. Pour qu'il fonctionne correctement, nous avons séparé les variables en deux : celles qui correspondent à des chaînes de caractères qui commencent par s et les autres qui correspondent à des nombres. 
-Puis nous nous sommes occupés de l'assignation des chaînes de caractères. 
+Puis nous nous sommes occupés de la façon de gérer les chaînes de caractères dans le compilateur, ainsi que de la façon dont calcule la longueur d'une chaîne.  
 
 ### Limites du projet
-
+L'assignation peut entraîner des problèmes des pointeurs lorsqu'on fait une assignation du type:
+'''python
+s1 = "abd"
+'''
