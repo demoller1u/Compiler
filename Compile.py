@@ -156,7 +156,7 @@ def compilExpression(ast):
     elif ast.data == "exp_concat" :
         return compilConcat(ast)
     elif ast.data == "exp_len" :
-        return compilLen(ast)
+        return compilLen2(ast)
     elif ast.data == "exp_char_at" :
         return compilCharAt(ast)
         
