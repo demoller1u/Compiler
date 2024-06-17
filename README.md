@@ -16,8 +16,8 @@ Dans ce projet chaque fonctionnalité a été traitée par une personne différe
 ## Branches
 
 Le projet est composé de 3 branches: 
-- Une branche main qui regroupe le code de base du fonctionnement du compilateur, ainsi qu'un exemple de code nanoc fonctionnel.
-- une branche fonction qui regroupe l'ensemble des codes permettant de compiler des fonctions. POur se faire, il suffit de faire la commande:
+- Une branche "main" qui regroupe le code de base du fonctionnement du compilateur, ainsi qu'un exemple de code nanoc fonctionnel.
+- une branche "functions" qui regroupe l'ensemble des codes permettant de compiler des fonctions. POur se faire, il suffit de faire la commande:
 ```bash
 python main.py hello.c hello.asm
 ```
@@ -27,7 +27,7 @@ Nasm –f elf64 hello.asm
 Gcc -no-pie hello.o
 ./a.out // suivi des entrées
 ```
-- une branche function_string qui regroupe l'ensemble des codes permettant de compiler des chaînes de caractères. POur se faire, il suffit de faire la commande:
+- une branche "function_string" qui regroupe l'ensemble des codes permettant de compiler des chaînes de caractères. POur se faire, il suffit de faire la commande:
 ```bash
 python main.py string.c string.asm
 ```
@@ -52,7 +52,8 @@ Gcc -no-pie string.o
 
 Cette partie du projet permet de traiter les chaînes de caractères grâce au compilateur.
 
-### Exemples de codes
+### Exemple de codes
+
 ```python
 main(s1,s2,X){
     s1 = "abcd";
@@ -61,13 +62,14 @@ main(s1,s2,X){
     return(s1);
 }
 ```
+
 ### Principe de compilation
 
 Les prinipales opérations rajoutées sont : 
-- l'assignation de chaînes de caractères
-- le calcul de la taille d'une chaîne de caractères
-- la recherche d'un caractère
-- la concaténation de deux chaînes de caractères
+- l'assignation de chaînes de caractères, qui assigne une chaîne de caractère à une variable.
+- le calcul de la taille d'une chaîne de caractères, qui prend en entrée la chaîne de caractère et qui la parcourt jusqu'à arriver à la fin de la chaîne tout en comptant le nombre de caractères parcouru.
+- la recherche d'un caractère, qui prend la chaîne de caractère et la position du caractère recherché et qui renvoie le caractère sous forme de nombre. Pour cela on place le pointer directement à l'endroit concerné et on place ce qui s'y trouve dans rax
+- la concaténation de deux chaînes de caractères, qui s'opére en copiant directement la chaîne numéro deux à la suite de la chaîne numéro une.
 
 ### Fonctionnalités opérationnelles
 
