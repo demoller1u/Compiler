@@ -40,9 +40,106 @@ Gcc -no-pie string.o
 
 
 ## Fonctions
-
+La branche fonction regroupe un parser et un compilateur permettant certaines opérations avec des fonctions, de manière similaire à celle du C. Pour compiler, il est nécessaire que le programme ait une fonction main avec au moins 1 variable. Une sécurité a été ajoutée dans le cas de tentative d'éxecution de code avec un mauvais nombre d'argument, c'est à dire un nombre différent de celui qui est précisé dans la fonction main (et qui doit toujours être supérieur ou égal à 1).
 ### Exemples de codes
+#### Cas dans les arguments:
+```c
+main(A) {
+  /////
+}
+```
+Résultat
+```
+>./program.out 1 1 1
+Error: wrong number of arguments
+```
+#### Exemple 1 -> Appel de fonction
+```c
+main(A) {
+    test(A);
+    return(0);
+}
+
+test(X) {
+    printf(X);
+    return(X);
+}
+```
+Résultat:
+```bash
+>./program.out 1
+1
+```
+
+#### Exemple 2 -> Appel d'une fonction avec argument;
+```c
+main(A) {
+    X = test(A);
+    printf(X);
+    return(0);
+}
+
+test(X) {
+    return(X);
+}
+```
+Résultat:
+```bash
+>./program.out 1
+1
+```
+#### Exemple 3 -> Appel d'une fonction au sein d'une fonction
+```c
+main(A) {
+    printf(1);
+    test();
+    printf(5);
+    return(0);
+}
+
+test() {
+    printf(2);
+    secondtest();
+    printf(4);
+    return(0);
+}
+
+secondtest() {
+   printf(3);
+   return(0);
+}
+```
+Résultat:
+```bash
+>./program.out 1
+1
+2
+3
+4
+5
+```
+#### Exemple 4 -> Utilisation d'une variable locale
+```c
+main(A) {
+    B = test(A);
+    A = A + B;
+    printf(A);
+    return(0);
+}
+
+test(X) {
+    B = 1;
+    X = X + B;
+    return(X);
+}
+```
+Résultat:
+```bash
+>./program.out 1
+3
+```
 ### Principe de compilation
+
 ### Fonctionnalités opérationnelles
 ### Limites du projet
 
