@@ -9,7 +9,7 @@ def compile(ast):
     asmString = asmString + "extern printf, atol ;déclaration des fonctions externes\n"
     asmString = asmString + "global main ; declaration main\n"
     asmString = asmString + "section .bss ; section des buffer\n"
-    asmString = asmString + "buffer resb 256 ; Buffer for string operations\n"
+    asmString = asmString + "buffer resb 256 ; buffer utilisé pour les opérations\n"
     asmString = asmString + "section .data ; section des données\n"
     asmString = asmString + "hex_chars: db '0123456789ABCDEF' \n"
     asmString = asmString + "long_format: db '%lld',10, 0 ; format pour les int64_t\n"
@@ -47,17 +47,19 @@ def initMainVar(ast):
         for child in ast.children:
             asmVar += "mov rbx, [argv] ; initVar\n"
             asmVar += f"mov rdi, [rbx + { 8*(index+1)}]\n"
-            asmVar += "xor rax, rax\n"
-            asmVar += "call atol\n"
-            asmVar += f"mov [{child.children[0].value}], rax\n" 
+            if child.data == "var_string":
+                asmVar += f"mov [{child.children[0].value}], rdi\n" 
+            else :
+                asmVar += "xor rax, rax\n"
+                asmVar += "call atol\n"
+                asmVar += f"mov [{child.children[0].value}], rax\n" 
             index += 1
     return asmVar
 
 def compilReturn(ast):
     asm = compilExpression(ast)
     if ast.children[0].data == "var_string" :
-        asm += "mov rsi, rax \n"
-        asm += "mov rdi, long_format \n"
+        asm += "mov rdi, string_format \n"
     else :
         asm += "mov rsi, rax ; Return \n"
         asm += "mov rdi, long_format \n"
@@ -126,13 +128,13 @@ def compilPrintf(ast):
 
 def compilAsgtString(ast):
     asm = compilExpression(ast.children[1])
-    asm += f"mov [{ast.children[0].value}], rax ; asgt_str\n"
+    asm += f"mov [{ast.children[0].value}], rsi ; asgt_str\n"
     return asm
 
 
 def compilVar(ast): 
     if ast.data == "var_string":
-        return f"mov rax, [{ast.children[0].value}] \n"
+        return f"mov rsi, [{ast.children[0].value}] \n"
     if ast.data == "var_int":
         return f"mov rax, [{ast.children[0].value}] \n"
 
@@ -142,7 +144,7 @@ def compilExpression(ast):
     elif ast.data ==  "exp_nombre":
         return f"mov rax, {ast.children[0].value}\n"
     elif ast.data ==  "exp_string":
-        return f"mov rax, {ast.children[0].value}\n"
+        return f"mov rsi, {ast.children[0].value}\n"
     elif ast.data == "exp_binaire":
         return f"""
                 {compilExpression(ast.children[2])} ; bin
@@ -163,25 +165,24 @@ def compilConcat(ast):
     cpt += 1
     return f"""
             {compilExpression(ast.children[0])}
-            mov rsi, rax ; Load address of the first string into rsi
             {compilExpression(ast.children[1])}
-            mov rdi, rax ; Load address of the second string into rdi
-            lea rax, [buffer] ; Use buffer for the result
-            mov rcx, rax ; Save the result address into rcx
-            ; Copy first string
+            mov rdi, rsi 
+            lea rax, [buffer]  
+            mov rcx, rax  
+            ; copie de la première chaine
             copy_first_{cpt}:
                 lodsb
                 stosb
                 test al, al
                 jnz copy_first_{cpt}
-            dec rcx ; Remove null terminator
-            ; Copy second string
+            dec rcx  
+            ; Copie de la seconde chaine
             copy_second_{cpt}:
                 lodsb
                 stosb
                 test al, al
                 jnz copy_second_{cpt}
-            mov rax, rcx ; Resulting string address
+            mov rsi, rcx  
         """
 
 def compilLen(ast):
@@ -209,15 +210,29 @@ def compilLen(ast):
             div rbx
         """
 
+def compilLen2(ast):
+    global cpt
+    cpt += 1
+    return f"""
+            {compilExpression(ast.children[0])} 
+            xor rax, rax ; Compteur
+            len_loop_{cpt} :
+                cmp byte [rsi + rax], 0  
+                je len_end_{cpt}  
+                inc rax 
+                jmp len_loop_{cpt} 
+            len_end_{cpt} :
+        """
+
+
 # Résultat sous forme d'un entier correpondant à la lettre
 def compilCharAt(ast):
     return f'''
     {compilExpression(ast.children[0])}
-            mov rsi, rax ; Load address of the string into rsi
-            {compilExpression(ast.children[1])}
-            mov rcx, rax ; Load the index into rcx
-            mov al, [rsi + rcx] ; Load the character at the specified index into al
-            mov rax, al
+    {compilExpression(ast.children[1])}
+    mov rcx, rax  
+    mov al, [rsi + rcx] 
+    mov rax, al
     '''
 
 #Permet de convertir en hexadécimal les caractères écrit en décimal
