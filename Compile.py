@@ -244,6 +244,8 @@ def compilCommandCall(ast, func_name):
                     # We know it's a number, we must push the number
                     asm_call += f"push {arg.children[0].value.strip()}\n"
     asm_call += f"call {ast.children[0].value}\n"
+    num_args = len(functions_dict[ast.children[0].value]["args"])
+    asm_call += f"add rsp, {8 * num_args}\n"
     return asm_call
 
 
