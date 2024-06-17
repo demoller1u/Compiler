@@ -13,6 +13,7 @@ def compile_ast(ast):
         asmString = asmString + "extern printf, atol ;déclaration des fonctions externes\n"
         asmString = asmString + "section .data ; section des données\n"
         asmString = asmString + "long_format: db '%lld',10, 0 ; format pour les int64_t\n"
+        asmString = asmString + "string_format: db '%s',10, 0 ; format pour les int64_t\n"
         asmString = asmString + "error_msg_args : db 'Error: wrong number of arguments',10, 0\n"
         asmString = asmString + "argc : dd 0 ; copie de argc\n"
         asmString = asmString + "argv : dd 0 ; copie de argv\n"
@@ -113,7 +114,7 @@ def initStart(function_dict):
 def initExitWithError():
     asmVar = "\nexit_error:\n"
     asmVar += "mov rsi, error_msg_args\n"
-    asmVar += "mov rdi, long_format\n"
+    asmVar += "mov rdi, string_format\n"
     asmVar += "xor rax, rax\n"
     asmVar += "call printf\n"
     asmVar += "mov rax, 60\n"
@@ -211,6 +212,42 @@ def compilReturn(ast):
     return asm
 
 
+def compilCommandCall(ast, func_name):
+    asm_call = ""
+    # We get the arguments, and we must differentiate between variables and numbers
+    for child in ast.children[1:]:
+        if child.data == "args_normaux":
+            # We must push the arguments in the reverse order
+            for arg in reversed(child.children):
+                if arg.data == "exp_variable":
+                    # We know that the argument is a variable, we must push the value of the variable
+                    # -> If the variable is a local variable, then it is in the stack after rbp ex: [rbp - 8]
+                    # -> If the variable is an argument, then it is in the stack before rbp + 16 ex: [rbp + 16]
+                    var_name = arg.children[0].value.strip()
+                    if var_name in functions_dict[func_name]["args"]:
+                        # We assume that the adress of the arg is rbp + 16 + i*8, i being the position in the list of
+                        # args
+                        arg_index = functions_dict[func_name]["args"].index(var_name)
+                        if func_name == "main":
+                            arg_index -= 1
+                        asm_call += f"mov rax, [rbp + {16 + arg_index * 8}]\n"
+                        asm_call += f"push rax\n"
+                        asm_call += "xor rax, rax\n"
+                    else:
+                        # We assume that the adress of the arg is rbp - 8 - i*8, i being the position in the list of
+                        # vars
+                        arg_index = functions_dict[func_name]["vars"].index(var_name)
+                        asm_call += f"mov rax, [rbp - {8 + arg_index * 8}]\n"
+                        asm_call += f"push rax\n"
+                        asm_call += "xor rax, rax\n"
+                elif arg.data == "exp_nombre":
+                    # We know it's a number, we must push the number
+                    asm_call += f"push {arg.children[0].value.strip()}\n"
+    asm_call += f"call {ast.children[0].value}\n"
+    return asm_call
+
+
+
 def compilCommand(ast, func_name):
     asmVar = ""
     if ast.data == "com_while":
@@ -223,6 +260,8 @@ def compilCommand(ast, func_name):
         asmVar = compilAsgt(ast, func_name)
     elif ast.data == "com_printf":
         asmVar = compilPrintf(ast, func_name)
+    elif ast.data == "com_appel":
+        asmVar = compilCommandCall(ast, func_name)
     return asmVar
 
 

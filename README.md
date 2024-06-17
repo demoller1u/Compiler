@@ -19,7 +19,7 @@ Le projet est composé de 3 branches:
 - Une branche main qui regroupe le code de base du fonctionnement du compilateur, ainsi qu'un exemple de code nanoc fonctionnel.
 - une branche fonction qui regroupe l'ensemble des codes permettant de compiler des fonctions. POur se faire, il suffit de faire la commande:
 ```bash
-python main.py hello.c hello.asm
+python main.py string.c hello.asm
 ```
 puis pour lire le code assembleur, il faut faire :
 ```bash

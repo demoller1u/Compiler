@@ -25,6 +25,7 @@ commande : VARIABLE "=" expression ";"-> com_asgt //les exp entre "" ne sont pas
 | "while" "(" expression ")" "{" commande "}" -> com_while
 | "if" "(" expression ")" "{" commande "}" "else" "{" commande "}" -> com_if
 | "c" VARIABLE "=" STRING ";" -> com_asgt_string
+| FUNCTOKEN "(" arguments ");" -> com_appel
 
 liste_var :                -> liste_vide
 | VARIABLE ("," VARIABLE)* -> liste_normale
