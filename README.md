@@ -1,6 +1,6 @@
 # Compiler
 
-Le projet compilateur est un projet utilisant des notions drassembleur et de python. 
+Le projet compilateur est un projet utilisant des notions d'assembleur et de python. 
 Ce git résume comment compiler le projet et comment il fonctionne.
 Dans ce projet chaque fonctionnalité a été traité par une personne différente, Victor Matrat traitant les fonctions et Camille de Mollerat du Jeu traitant les chaînes de caractères. 
 
