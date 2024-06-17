@@ -182,7 +182,7 @@ Résultat:
 0
 ```
 #### Exemple 7 -> Utilisation du résultat d'un appel de fonction dans un print
-```
+```c
 main(A) {
     printf(test() + A);
     return(0);
