@@ -1,12 +1,12 @@
 main(A) {
-    B = test(A);
-    A = A + B;
-    printf(A);
+    B = A + test();
+    printf(B);
+    B = test() + 2;
+    printf(B);
     return(0);
 }
 
-test(X) {
+test() {
     B = 1;
-    X = X + B;
-    return(X);
+    return(B);
 }

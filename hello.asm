@@ -26,18 +26,24 @@ push rax
 push rbp
 mov rbp, rsp
 sub rsp, 8
-mov rax, [rbp + 8]
-push rax
-xor rax, rax
 call test
-mov [rbp - 8], rax
-mov rax, [rbp - 8]
 push rax
 mov rax, [rbp + 8]
 pop rbx
 add rax, rbx
-mov [rbp + 8], rax
-mov rax, [rbp + 8]
+mov [rbp - 8], rax
+mov rax, [rbp - 8]
+mov rsi, rax 
+mov rdi, long_format 
+xor rax, rax 
+call printf 
+mov rax, 2
+push rax
+call test
+pop rbx
+add rax, rbx
+mov [rbp - 8], rax
+mov rax, [rbp - 8]
 mov rsi, rax 
 mov rdi, long_format 
 xor rax, rax 
@@ -54,14 +60,8 @@ mov rbp, rsp
 sub rsp, 8
 mov rax, 1
 mov [rbp - 8], rax
-mov rax, [rbp - 8]
-push rax
-mov rax, [rbp + 16]
-pop rbx
-add rax, rbx
-mov [rbp + 16], rax
 add rsp, 8
-mov rax, [rbp + 16]
+mov rax, [rbp - 8]
 pop rbp
 ret
 

@@ -402,4 +402,6 @@ def compilExpression(ast, func_name):
                + f"{compilExpression(ast.children[0], func_name).strip()}\n"
                + f"pop rbx\n" + f"{op2asm[ast.children[1].value]}\n")
         return asm
+    elif ast.data == "exp_appel":
+        return compilCommandCall(ast, func_name)
     return ""
