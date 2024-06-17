@@ -79,6 +79,6 @@ Puis nous nous sommes occupés de la façon de gérer les chaînes de caractère
 
 ### Limites du projet
 L'assignation peut entraîner des problèmes des pointeurs lorsqu'on fait une assignation du type:
-'''python
+```python
 s1 = "abd"
-'''
+```
