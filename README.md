@@ -42,7 +42,7 @@ Gcc -no-pie string.o
 ## Fonctions
 La branche fonction regroupe un parser et un compilateur permettant certaines opérations avec des fonctions, de manière similaire à celle du C. Pour compiler, il est nécessaire que le programme ait une fonction main avec au moins 1 variable. Une sécurité a été ajoutée dans le cas de tentative d'éxecution de code avec un mauvais nombre d'argument, c'est à dire un nombre différent de celui qui est précisé dans la fonction main (et qui doit toujours être supérieur ou égal à 1).
 ### Exemples de codes
-#### Cas dans les arguments:
+#### Cas avec un mauvais nombre d'arguments:
 ```c
 main(A) {
   /////
