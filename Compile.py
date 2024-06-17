@@ -14,6 +14,7 @@ def compile(ast):
     asmString = asmString + "hex_chars: db '0123456789ABCDEF' \n"
     asmString = asmString + "long_format: db '%lld',10, 0 ; format pour les int64_t\n"
     asmString = asmString + "string_format: db '%s',10, 0 ; format pour les string\n"
+    asmString = asmString + "length_format: db 'Length: %d', 10, 0 ; format pour la longueur de la chaîne \n"
     asmString = asmString + "argc : dq 0 ; copie de argc\n"
     asmString = asmString + "argv : dq 0 ; copie de argv\n"
     asmVar, vars = variable_declaration(ast.children[0])
@@ -27,8 +28,9 @@ def compile(ast):
     asmString += compilCommand(ast.children[1])
     asmString += compilReturn(ast.children[2])
     asmString += "pop rbp\n"
-    asmString += "xor rax, rax\n"
-    asmString += "ret\n"
+    asmString += "mov rax, 60\n"
+    asmString += "xor rdi, rdi\n"
+    asmString += "syscall\n"
     return asmString
 
 def variable_declaration(ast) :  # pretty printer liste var
@@ -120,11 +122,15 @@ def compilAsgt(ast):
 
 def compilPrintf(ast):
     asm = compilExpression(ast.children[0])
-    asm += "mov rsi, rax ; printF\n"
-    asm += "mov rdi, long_format \n"
+    if ast.children[0].data == "var_string" :
+        asm += "mov rdi, string_format \n"
+    else :
+        asm += "mov rsi, rax ; printF\n"
+        asm += "mov rdi, long_format \n"
     asm += "xor rax, rax \n"
     asm += "call printf \n"
     return asm
+
 
 def compilAsgtString(ast):
     asm = compilExpression(ast.children[1])
@@ -156,7 +162,7 @@ def compilExpression(ast):
     elif ast.data == "exp_concat" :
         return compilConcat(ast)
     elif ast.data == "exp_len" :
-        return compilLen2(ast)
+        return compilLen(ast)
     elif ast.data == "exp_char_at" :
         return compilCharAt(ast)
         
@@ -186,42 +192,19 @@ def compilConcat(ast):
         """
 
 def compilLen(ast):
-    print(ast)
-    global cpt
-    cpt += 1
-    return f""" 
-            {compilExpression(ast.children[0])}
-            mov rdi,rax ; Len
-            xor rsi, rsi
-            mov rsi, 1
-            loop{cpt} : 
-                mov rax,rdi
-                cmp rax,0
-                jz fin{cpt}
-                mov rbx, 16
-                test rbx, rbx
-                div rbx
-                inc rsi
-                mov rdi,rax
-                jmp loop{cpt}
-            fin{cpt} : 
-            mov rax, rdx
-            mov rbx, 2
-            div rbx
-        """
-
-def compilLen2(ast):
     global cpt
     cpt += 1
     return f"""
             {compilExpression(ast.children[0])} 
-            xor rax, rax ; Compteur
+            mov rdi, rsi
+            xor rcx, rcx ; Compteur
             len_loop_{cpt} :
-                cmp byte [rsi + rax], 0  
+                cmp byte [rdi + rcx], 0  
                 je len_end_{cpt}  
-                inc rax 
+                inc rcx 
                 jmp len_loop_{cpt} 
             len_end_{cpt} :
+                mov rax, rcx
         """
 
 
@@ -235,22 +218,3 @@ def compilCharAt(ast):
     mov rax, al
     '''
 
-#Permet de convertir en hexadécimal les caractères écrit en décimal
-def convertDecToHexdec():
-    return f'''
-        lea rdi, [buffer + 16]
-        mov byte [rdi],0
-        dec rdi
-        convert :
-            mov rbx, 16
-            xor rdx,rdx
-            div rbx
-            mov bl,dl
-            movzx bl, byte[hex_chars + rbx]
-            mov [rdi], bl
-            dec rdi
-            test rax,rax
-            jnz convert
-        end :
-            lea rsi,[rdi + 1]
-'''
