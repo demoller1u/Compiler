@@ -49,9 +49,29 @@ Gcc -no-pie string.o
 
 ## String
 
+Cette partie du projet permet de traiter les chaînes de caractères grâce au compilateur.
+
 ### Exemples de codes
+```python
+main(s1,s2,X){
+    s1 = "abcd";
+    s2 = "efgh" ;
+    s1 = s2 ;
+    return(s1);
+}
+```
 ### Principe de compilation
+
+Les prinipales opérations rajoutées sont : 
+- l'assignation de chaînes de caractères
+- le calcul de la taille d'une chaîne de caractères
+- la recherche d'un caractère
+- la concaténation de deux chaînes de caractères
+
 ### Fonctionnalités opérationnelles
+
+Nous avons commencé par mettre en place le parser. Pour qu'il fonctionne correctement, nous avons séparé les variables en deux : celles qui correspondent à des chaînes de caractères qui commencent par s et les autres qui correspondent à des nombres. 
+Puis nous nous sommes occupés de l'assignation des chaînes de caractères. 
 
 ### Limites du projet
 
