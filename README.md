@@ -244,13 +244,14 @@ Les fonctionnalités suivantes ont été testées avec les exemples ci-dessus:
     A = test();
     printf(test());
     return(0);
-}
-test() {
-    return(55);
-}
-
-//>./program.out 3
-//55
+  }
+  test() {
+      return(55);
+  }
+  ```
+  ```
+  >./program.out 3
+  55
   ```
 - Ensuite, une fonction qui n'est pas appelée va tout de même être compilée (code mort)
 - La récursivité n'est pas correctement assurée (en particulier l'état de la pile n'est pas correct).
